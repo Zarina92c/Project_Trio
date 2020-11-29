@@ -4,6 +4,7 @@ package Practice;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import utility.ConfigurationReader;
 import utility.DB_Utility;
@@ -49,8 +50,11 @@ Assert actual result is same as expected result.
 
 
         int countUsers = Integer.parseInt(usersCount);
+        System.out.println("countUsers = " + countUsers);
         int countBooks = Integer.parseInt(booksCount);
+        System.out.println("countBooks = " + countBooks);
         int countBorrowed = Integer.parseInt(borrowedBooksCount);
+        System.out.println("countBorrowed = " + countBorrowed);
 
 
 
@@ -59,12 +63,28 @@ Assert actual result is same as expected result.
         String passWord= ConfigurationReader.getProperty("library2.database.password");
         DB_Utility.createConnection(url, userName, passWord);
 
-        String query = "select * from users";
+        String query1 = "select * from users";
+        String query2= "select * from books";
+        String query3 = "select * from book_borrow where is_returned=0";
 
 
-        DB_Utility.runQuery(query);
+        DB_Utility.runQuery(query1);
         int expectedUsersCount =  DB_Utility.getRowCount();
         System.out.println("Users Count: "+ expectedUsersCount);
+
+        DB_Utility.runQuery(query2);
+        int actualNumberOfBooks = DB_Utility.getRowCount();
+        System.out.println("Books Count: "+ actualNumberOfBooks);
+
+        DB_Utility.runQuery(query3);
+        int actualBorrowedBooksCount = DB_Utility.getRowCount();
+        System.out.println("Borrows books count: "+actualBorrowedBooksCount);
+
+
+        Assert.assertEquals(expectedUsersCount, countUsers);
+        Assert.assertEquals(actualBorrowedBooksCount, countBorrowed);
+        Assert.assertEquals(actualNumberOfBooks, countBooks);
+
 
 
 
